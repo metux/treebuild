@@ -1,0 +1,155 @@
+<project name="UniTool" default="all" basedir=".">
+    <property environment="env" />
+
+    <!-- user configurable locations -->
+    <property name="destdir"         value="" />
+    <property name="prefix"          value="${env.HOME}/.usr/treebuild" />
+    <property name="libdir"          value="${prefix}/lib" />
+    <property name="bindir"          value="${prefix}/bin" />
+    <property name="sysconfdir"      value="${prefix}/etc" />
+    <property name="java-runtime"    value="java" />
+    
+    <property name="import-libmetux" value="${env.HOME}/.usr/unitool/lib/metux-java.jar" />
+    <property name="import-unitool"  value="${env.HOME}/.usr/unitool/lib/unitool.jar" />
+
+    <property name="CLASSPATH"       value="${import-libmetux}:${import-unitool}:${build-lib}:." />
+
+    <property name="build"           value=".build"         />
+    <property name="build-lib"       value="${build}/lib"   />
+    <property name="build-tests"     value="${build}/tests" />
+    <property name="jarfile"         value="${build}/treebuild.jar" />
+
+    <!-- where files will be installed -->
+    <property name="install-jar-metux"     value="${libdir}/metux-java.jar" />
+    <property name="install-jar-unitool"   value="${libdir}/unitool.jar" />
+    <property name="install-jar-treebuild" value="${libdir}/treebuild.jar" />
+    
+    <target name="compile-base">
+	<mkdir dir="${build-lib}" />
+    	<javac destdir="${build-lib}" srcdir="base" debug="on" classpath="${CLASSPATH}">
+            <include name="Conversion.java"/>
+            <include name="EDependencyMissing.java"/>
+            <include name="EPIException.java"/>
+            <include name="EPropertyMissing.java"/>
+            <include name="IDependNode.java"/>
+            <include name="IImportNode.java"/>
+            <include name="IIncludeNode.java"/>
+            <include name="INode.java"/>
+            <include name="IPackageNode.java"/>
+            <include name="ISourceNode.java"/>
+            <include name="ITargetNode.java"/>
+            <include name="TreebuildConfig.java"/>
+	</javac>
+    </target>
+
+    <target name="compile-conf" depends="compile-base">
+	<mkdir dir="${build-lib}" />
+    	<javac destdir="${build-lib}" srcdir="conf" debug="on" classpath="${CLASSPATH}">
+            <include name="Configure.java"/>
+            <include name="Feature.java"/>
+            <include name="HeaderFile.java"/>
+            <include name="Substitute.java"/>
+	</javac>
+    </target>
+
+    <target name="compile-parser" depends="compile-base,compile-conf,compile-nodes">
+	<mkdir dir="${build-lib}" />
+    	<javac destdir="${build-lib}" srcdir="parser" debug="on" classpath="${CLASSPATH}">
+            <include name="CommonAliasParser.java"/>
+            <include name="CommonPropertyParser.java"/>
+            <include name="ConfigureObjectParser.java"/>
+            <include name="DependObjectParser.java"/>
+            <include name="ExecutableObjectParser.java"/>
+            <include name="ImportObjectParser.java"/>
+            <include name="IncludeObjectParser.java"/>
+            <include name="LibraryObjectParser.java"/>
+            <include name="LoadTree.java"/>
+            <include name="ManualObjectParser.java"/>
+            <include name="ObjectParser.java"/>
+            <include name="PackageObjectParser.java"/>
+            <include name="ResourceObjectParser.java"/>
+            <include name="RootObjectParser.java"/>
+            <include name="SourceObjectParser.java"/>
+	</javac>
+    </target>
+
+    <target name="compile-nodes" depends="compile-base,compile-conf">
+	<mkdir dir="${build-lib}" />
+    	<javac destdir="${build-lib}" srcdir="nodes" debug="on" classpath="${CLASSPATH}">
+            <include name="AutodepNode.java"/>
+            <include name="ConditionalTargetNode.java"/>
+            <include name="DependNode.java"/>
+            <include name="ExecutableTargetNode.java"/>
+            <include name="HeaderNode.java"/>
+            <include name="ImportNode.java"/>
+            <include name="LibraryTargetNode.java"/>
+            <include name="PINode_childs.java"/>
+            <include name="PackageNode.java"/>
+            <include name="ResourceNode.java"/>
+            <include name="RootNode.java"/>
+            <include name="SourceNode.java"/>
+            <include name="TargetNode.java"/>
+	</javac>
+    </target>
+
+    <target name="compile-main" depends="compile-base,compile-conf,compile-nodes,compile-parser">
+	<mkdir dir="${build-lib}" />
+    	<javac destdir="${build-lib}" srcdir="main" debug="on" classpath="${CLASSPATH}">
+            <include name="Main.java"/>
+            <include name="One.java"/>
+            <include name="PIBuild.java"/>
+            <include name="TreeBuilder.java"/>
+	</javac>
+    </target>
+
+    <target name="compile" depends="compile-base,compile-conf,compile-nodes,compile-parser,compile-main">
+        <jar jarfile="${jarfile}" basedir="${build-lib}"/>
+    </target>
+
+<!--
+    <target name="compile-tests" depends="link-lib,compile-base,compile-log,compile-propertylist">
+	<mkdir dir="${build-tests}" />
+    	<javac destdir="${build-tests}" srcdir="tests" debug="on" classpath="${jarfile}">
+	    <include name="_test_util.java"/>
+	    <include name="_test_main.java"/>
+	</javac>
+    </target>
+
+    <target name="run-tests" depends="compile-tests">
+	<java classname="_test_util" classpath="${jarfile}:${build-tests}" /> 
+	<java classname="_test_log" classpath="${jarfile}:${build-tests}" />
+    </target>
+
+-->
+    <target name="run-tests" />
+    <target name="all"     depends="compile,run-tests" />
+
+    <target name="clean">
+	<delete dir="${build-tests}" />
+	<delete dir="${build-lib}"   />
+	<delete dir="${build}"       />
+	<delete file="${jarfile}"    />
+    </target>
+
+    <target name="install" depends="compile,run-tests">
+	<mkdir dir="${destdir}${libdir}" />
+	<mkdir dir="${destdir}${bindir}" />
+	<copy file="${jarfile}"   todir="${destdir}${libdir}" />
+	<copy file="${import-libmetux}" todir="${destdir}${libdir}" />
+	<copy file="${import-unitool}"  todir="${destdir}${libdir}" />
+
+	<delete file="${destdir}${bindir}/treebuild" />
+	<echo file="${destdir}${bindir}/treebuild">#!/bin/bash
+#
+# autogenerated - dont touch
+#
+if [ ! "$TREEBUILD_CONFIG" ]; then
+    TREEBUILD_CONFIG="${sysconfdir}/treebuild.conf"
+fi
+export CLASSPATH="$CLASSPATH:${install-jar-metux}:${install-jar-unitool}:${install-jar-treebuild}"
+${java-runtime} org.de.metux.treebuild.main.Main "$*"
+	</echo>
+	<chmod file="${destdir}${bindir}/treebuild" perm="u=rwx,go=rx" />
+
+    </target>
+</project>

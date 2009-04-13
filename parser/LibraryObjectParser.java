@@ -1,0 +1,77 @@
+
+package org.de.metux.treebuild.parser;
+
+import java.util.Properties;
+import java.util.Hashtable;
+
+import org.de.metux.treebuild.nodes.LibraryTargetNode;
+import org.de.metux.treebuild.nodes.ConditionalTargetNode;
+import org.de.metux.treebuild.base.INode;
+import org.de.metux.treebuild.base.TreebuildConfig;
+
+class LibraryObjectParser extends ObjectParser
+{
+    LibraryTargetNode target;
+    INode parent;
+
+    class ConditionalParser extends ObjectParser
+    {
+	ConditionalTargetNode cond;
+	
+	void handle_Sub(String qn, Properties attrs)
+	{
+	    if (qn.equals("include-file"))
+	        setSubParser(new IncludeObjectParser(config,attrs,cond));
+	    else if (qn.equals("import"))
+		setSubParser(new ImportObjectParser(config,attrs,cond));
+	    else if (qn.equals("property"))
+		setSubParser(new CommonPropertyParser(config,attrs,cond));
+	    else
+	        super.handle_Sub(qn,attrs);
+	}
+    
+	void handle_Close()
+	{
+	    target.addSubTarget(cond);
+	}
+
+	ConditionalParser(TreebuildConfig cf, Properties attrs)
+	{
+	    super(cf, attrs,"LIBRARY");
+	    cond = new ConditionalTargetNode(cf,attributes);
+	}
+    }
+    
+    void handle_Sub(String qName, Properties attrs)
+    {
+	if (qName.equals("property"))
+	    setSubParser(new CommonPropertyParser(config,attrs,target));
+	else if (qName.equals("import"))
+	    setSubParser(new ImportObjectParser(config,attrs,target));
+	else if (qName.equals("conditional"))
+	    setSubParser(new ConditionalParser(config,attrs));
+	else if (qName.equals("include-file"))
+	    setSubParser(new IncludeObjectParser(config,attrs,target));
+	else if (qName.equals("source"))
+	    setSubParser(new SourceObjectParser(config,attrs,target));
+	else 
+	    super.handle_Sub(qName,attrs);
+    }
+	
+    void handle_Close()
+    {
+	parent.addChild(target);
+    }
+	
+    LibraryObjectParser(TreebuildConfig cf, Properties attrs, INode p)
+    {
+	super(cf,attrs,"LIBRARY");
+	parent   = p;
+	target   = new LibraryTargetNode(cf,attributes);
+    }
+    
+    public String getNodetype()
+    {
+	return "LIBRARY";
+    }
+}

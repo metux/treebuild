@@ -1,0 +1,19 @@
+#
+# unitool example config file
+# 
+
+# we've got the environment passed here with prefix "@ENV/"
+
+target-configured:				ok
+target-system:					nibiru
+target-system-root:				/opt/xcompiler/$(target-system)/sys-root/
+
+## tool commands - these are of course platform/backend specific
+## currently we only have an GNU backend.
+tools/prefix:					/opt/xcompiler/$(target-system)/bin/
+tools/compiler/c-binobj/compiler-type:		gnu
+tools/compiler/c-binobj/compiler-command:	/opt/xcompiler/$(target-system)/bin/gcc
+tools/linker/link-dll/linker-command:		/opt/xcompiler/$(target-system)/bin/gcc
+tools/linker/link-static/ar-command:		/opt/xcompiler/$(target-system)/bin/ar
+tools/linker/link-static/ranlib-command:	$(@ENV/RANLIB)
+tools/linker/link-executable/linker-command:	$(tools/prefix)/gcc

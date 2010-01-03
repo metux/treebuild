@@ -1,0 +1,41 @@
+TreeBuild
+===========
+
+This is a buildsystem that models the structure of a software package
+instead of using rules to drive the build process. From this structure
+treebuild derives the (maybe platform specific) build process all
+on itself.
+
+The idea behind is: let the coder tell how is packages is structured,
+what it's made of, but never ever have him to care how the actually
+build process go.
+
+
+Install:
+
+    * install metux-java library from http://repo.or.cz/w/metux-java.git
+    * install unitool from http://repo.or.cz/w/unitool.git
+    * eventually adapt pathes at the top of build.xml
+    * run `ant` to compile and `ant install` to install
+
+Setup:
+
+    * Copy examples/config/* to some proper place and adapt them to your 
+      needs (unitool.cf the config file for the called unitool commands,
+      it's location is specified in treebuild.cf)
+    * set the location of treebuild.cf in $TREEBUILD_CONFIG
+
+Running:
+
+    * take some project which has an treebuild.xml file, got to that
+      directory and call the `treebuild` procelain script
+
+Writing an treebuild.xml:
+
+    * take examples/buildfile/treebuild.xml as example, put it to your
+      project's source directory and adapt it to your needs - the 
+      format should be quite obvious ;-)
+
+
+Source tree:	http://repo.or.cz/w/treebuild.git
+Contact:	Enrico Weigelt, metux IT service <weigelt@metux.de>

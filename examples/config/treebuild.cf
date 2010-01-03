@@ -1,0 +1,41 @@
+
+## system properties
+@SYSTEM/unitool-config:		$(@TARGET/unitool-config)
+
+@TARGET/name:			nibiru
+@TARGET/unitool-config:		/install/config/systems/$(@TARGET/name)/etc/unitool/unitool.cf
+@TARGET/pkg-config-path:	$(@@system-root)/usr/lib/pkgconfig%3A$(@@system-root)/usr/X11/lib/pkgconfig
+@TARGET/pkg-config-cmdline:	pkg-config
+
+## templates for FHS style installations
+@FHS/install-prefix: 	     	/usr
+@FHS/install-sysconfdir:	/etc
+@FHS/install-localstatedir:     /var
+@FHS/install-x11-prefix:        $(@FHS/install-prefix)/X11
+@FHS/install-x11-sysconfdir:    $(@FHS/install-sysconfdir)/X11
+@FHS/install-x11-localstatedir: $(@FHS/install-localstatedir)/X11
+@FHS/install-sys-libdir:	/lib
+
+## package installation configuration
+@PACKAGE/fmode/library/pkgconfig:   	u=rw,go=r	
+@PACKAGE/fmode/library/sharedobject:	u=rwx,go=rx
+#@PACKAGE/install-subsys:		
+@PACKAGE/install-prefix:	     	$(@FHS/install-prefix)/$(@PACKAGE/install-subsys)/
+@PACKAGE/install-sysconfdir:     	$(@FHS/install-sysconfdir)/$(@PACKAGE/install-subsys)/
+@PACKAGE/install-localstatedir:  	$(@FHS/install-localstatedir)/$(PACKAGE/install-subsys)/
+@PACKAGE/install-datadir:        	$(@PACKAGE/install-prefix)/share
+@PACKAGE/install-bindir:	     	$(@PACKAGE/install-prefix)/bin
+@PACKAGE/install-sbindir:	     	$(@PACKAGE/install-prefix)/sbin
+@PACKAGE/install-includedir:     	$(@PACKAGE/install-prefix)/include
+@PACKAGE/install-libdir:	     	$(@PACKAGE/install-prefix)/lib
+@PACKAGE/install-libexecdir:     	$(@PACKAGE/install-prefix)/libexec
+@PACKAGE/install-pkgconfigdir:		$(@PACKAGE/install-libdir)/pkgconfig
+@PACKAGE/install-sys-libdir:		$(@FHS/install-sys-libdir)
+
+## operating system stuff
+@OS/configured:					yes
+@OS/library/dll/output-filename:		lib{LIBRARY_NAME}.so.{VERSION_INFO}
+@OS/library/dll/soname:				lib{LIBRARY_NAME}.so.{VERSION.0}
+@OS/library/dll/shortname:			lib{LIBRARY_NAME}.so
+@OS/executable/output-filename-version:		{MODULE_NAME}
+@OS/executable/output-filename-noversion:	{MODULE_NAME}

@@ -26,7 +26,7 @@
     
     <target name="compile-base">
 	<mkdir dir="${build-lib}" />
-    	<javac destdir="${build-lib}" srcdir="base" debug="on" classpath="${CLASSPATH}">
+	<javac destdir="${build-lib}" srcdir="base" debug="on" classpath="${CLASSPATH}" includeantruntime="false">
             <include name="Conversion.java"/>
             <include name="EDependencyMissing.java"/>
             <include name="EPIException.java"/>
@@ -44,7 +44,7 @@
 
     <target name="compile-conf" depends="compile-base">
 	<mkdir dir="${build-lib}" />
-    	<javac destdir="${build-lib}" srcdir="conf" debug="on" classpath="${CLASSPATH}">
+	<javac destdir="${build-lib}" srcdir="conf" debug="on" classpath="${CLASSPATH}" includeantruntime="false">
             <include name="Configure.java"/>
             <include name="Feature.java"/>
             <include name="HeaderFile.java"/>
@@ -54,7 +54,7 @@
 
     <target name="compile-parser" depends="compile-base,compile-conf,compile-nodes">
 	<mkdir dir="${build-lib}" />
-    	<javac destdir="${build-lib}" srcdir="parser" debug="on" classpath="${CLASSPATH}">
+	<javac destdir="${build-lib}" srcdir="parser" debug="on" classpath="${CLASSPATH}" includeantruntime="false">
             <include name="CommonAliasParser.java"/>
             <include name="CommonPropertyParser.java"/>
             <include name="ConfigureObjectParser.java"/>
@@ -75,7 +75,7 @@
 
     <target name="compile-nodes" depends="compile-base,compile-conf">
 	<mkdir dir="${build-lib}" />
-    	<javac destdir="${build-lib}" srcdir="nodes" debug="on" classpath="${CLASSPATH}">
+	<javac destdir="${build-lib}" srcdir="nodes" debug="on" classpath="${CLASSPATH}" includeantruntime="false">
             <include name="AutodepNode.java"/>
             <include name="ConditionalTargetNode.java"/>
             <include name="DependNode.java"/>
@@ -94,7 +94,7 @@
 
     <target name="compile-main" depends="compile-base,compile-conf,compile-nodes,compile-parser">
 	<mkdir dir="${build-lib}" />
-    	<javac destdir="${build-lib}" srcdir="main" debug="on" classpath="${CLASSPATH}">
+	<javac destdir="${build-lib}" srcdir="main" debug="on" classpath="${CLASSPATH}" includeantruntime="false">
             <include name="Main.java"/>
             <include name="One.java"/>
             <include name="PIBuild.java"/>
